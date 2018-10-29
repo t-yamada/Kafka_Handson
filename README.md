@@ -1,0 +1,2 @@
+# Kafka_Handson
+Kafkaのハンズオンを実施した際のVagrantファイル等
