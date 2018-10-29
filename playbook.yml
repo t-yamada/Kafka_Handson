@@ -1,0 +1,62 @@
+- hosts: all
+  become: yes
+
+  vars:
+    scala_version: "2.11"
+    kafka_version: "2.0.0"
+
+    install_dir: "/opt"
+    symlink_name: "kafka"
+    kafka_name: "kafka_{{ scala_version }}-{{ kafka_version }}"
+    kafka_download_url: "http://ftp.yz.yamagata-u.ac.jp/pub/network/apache/kafka/{{ kafka_version }}/{{ kafka_name }}.tgz"
+
+  tasks:
+  - name: ensure openjdk8 present
+    apt:
+      name: "openjdk-8-jdk"
+      state: present
+      update_cache: yes
+
+  - name: ensure kafka present
+    unarchive:
+      remote_src: yes
+      src: "{{ kafka_download_url }}"
+      dest: "{{ install_dir }}"
+
+  - name: ensure symlink present
+    file:
+      src: "{{ install_dir }}/{{ kafka_name }}"
+      dest: "{{ install_dir }}/{{ symlink_name }}"
+      mode: 0755
+      state: link
+
+  - name: copy a zookeeper setting file
+    copy:
+      src: files/base/zookeeper.properties
+      dest: /opt/kafka/config/zookeeper.properties
+      mode: 0755
+
+  - name: zookeeper myid directory
+    file:
+      path: /var/lib/zookeeper
+      state: directory
+      mode: 0755
+
+  - name: copy a myid file
+    copy:
+      src: files/{{ansible_hostname}}/myid
+      dest: /var/lib/zookeeper/myid
+      mode: 0755
+
+  - name: kafka log directory
+    file:
+      path: /opt/kafka-logs
+      state: directory
+      mode: 0755
+
+  - name: copy a kafka setting file
+    copy:
+      src: files/{{ansible_hostname}}/server.properties
+      dest: /opt/kafka/config/server.properties
+      mode: 0755
+
