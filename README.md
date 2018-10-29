@@ -28,7 +28,7 @@ node01～node03の3台のVMが立ち上がります。
 
     > cd c:\
     > mkdir git
-    
+    > cd git
     > git clone https://github.com/t-yamada/Kafka_Handson.git
     > cd Kafka_Handson
     > vagrant up
